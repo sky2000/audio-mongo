@@ -18,32 +18,29 @@
 <body>
 
 <table id="dg" title="查询结果" class="easyui-datagrid" style="width:100%;height:auto;"
-		url="/imagecenter/imagesdatagrid?validStatus=1"
+		url="/audio/audiodatagrid?validStatus=1"
 		toolbar="#toolbar"
 		rownumbers="true" pagination="true" fitColumns="true">
 		<!-- table增加了pagination="true"属性，就增加了底部的分页工具栏 -->
 	<thead>
 		<tr>
 			<!-- field必须不能重复，否则页面展示上比例调整起来很没有规律 -->
-			<th data-options="field:'uuid',hidden:true">refuuid</th>
-			<th data-options="field:'md5',hidden:true">md5</th>
-			<th data-options="field:'displayName',hidden:true">文件名</th>
-			<th data-options="field:'suffix',hidden:true">后缀名</th>
-			<th field="filename" width="20" formatter="formatFileName">名称</th>
-			<th field="userCode" width="20">上传者</th>
-			<th field="category" width="5">类别</th>
+			<th data-options="field:'id',hidden:true">id</th>
+			<th data-options="field:'userCode',hidden:true">userCode</th>
+			<th field="name" width="40">名称</th>
+			<th field="userName" width="30">上传者</th>
+			<th field="insertTime" width="30">上传时间</th>
 		</tr>
 	</thead>
 </table>
 <div id="toolbar">
 	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecord('上传图片')">上传图片</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editRecord('修改图片信息')">修改图片信息</a>
 	<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyRecord()">删除图片</a>
-	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newRecordMulti('多图片上传')">多图片上传</a>
 	
 </div>
 
 	<input type="hidden" id="userCode_hidden" name="userCode"/>
+	<input type="hidden" id="userName_hidden" name="userName"/>
 	
 	<div id="dlg" class="easyui-dialog" style="width:400px;height:auto;padding:0px 0px"
 			closed="true">
@@ -52,27 +49,17 @@
 				<table style="width:98%;">
 					<tr>
 						<td>
-							<input id="userCode_edit" name="userCode" label="用户名" class="easyui-textbox" style="width:98%"/>
+							<input id="userCode_edit" name="userCode" label="用户代码" class="easyui-textbox" style="width:98%"/>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<input id="category_edit" name="category" label="图片分类" class="easyui-textbox" style="width:98%"/>
+							<input id="userName_edit" name="userName" label="用户名" class="easyui-textbox" style="width:98%"/>
 						</td>
 					</tr>
 					<tr>
 						<td>
 							<input id="file_edit" class="easyui-filebox" label="文件" name="file"  data-options="buttonText:'选择',prompt:'请选择文件...'" style="width:98%">
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input id="fileNewName_edit" name="fileNewName" class="easyui-textbox" label="重命名为" style="width:98%"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input id="tags_edit" class="easyui-tagbox" value="" label="添加标签" style="width:98%"/>
 						</td>
 					</tr>
 					<tr>
@@ -85,108 +72,5 @@
 		</div>
 	</div>
 
-	<div id="dlg1" class="easyui-dialog" style="width:400px;height:auto;padding:0px 0px"
-			closed="true">
-		<div title="修改图片信息" style="padding:5px">
-			<form id="fm1" method="post" novalidate>
-				<input type="hidden" id="refuuid_edit_1" name="refuuid"/>
-				<input type="hidden" id="md5_edit_1" name="md5"/>
-				
-				<table style="width:98%;">
-					<tr>
-						<td>
-							<input id="userCode_edit_1" name="userCode" label="用户名" class="easyui-textbox" style="width:98%"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input id="category_edit_1" name="category" label="图片分类" class="easyui-textbox" style="width:98%"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input id="file_edit_1" name="file" label="文件" class="easyui-textbox" style="width:98%"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input id="fileNewName_edit_1" name="fileNewName" class="easyui-textbox" label="重命名为" style="width:98%"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input id="tags_edit_1" class="easyui-tagbox" value="" label="添加标签" style="width:98%"/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<a href="#" class="easyui-linkbutton" onclick="editFileInfo()" style="width:98%">确定</a>
-						</td>
-					</tr>
-				</table>
-			</form>
-		</div>
-	</div>
-	
-	<div id="dlg2" class="easyui-dialog" style="width:800px;height:auto;padding:0px 0px"
-			closed="true">
-		<div title="多图片上传" style="padding:5px">
-			<form id="fm2" method="post" novalidate>
-				
-				<table style="width:98%;">
-					<tr>
-						<td width="50%">
-							<input id="userCode_edit_2" name="userCode" label="用户名" class="easyui-textbox" style="width:98%"/>
-						</td>
-						<td width="45%">
-							<input id="category_edit_2" name="category" label="图片分类" class="easyui-textbox" style="width:98%"/>
-						</td>
-						<td width="5%">
-						</td>
-					</tr>
-					
-					<tr>
-						<td colspan="2" width="95%">
-							<input id="tags_edit_2" class="easyui-tagbox" value="" label="添加标签" style="width:100%"/>
-						</td>
-						<td width="5%">
-						</td>
-					</tr>
-					<tr>
-						<td width="50%">
-						</td>
-						<td width="45%">
-						</td>
-						<td width="5%">
-							<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="appendRow('row_data')"></a>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="3">
-							<table id="row_data" width="100%">
-								<tr id="uuid">
-									<td width="50%">
-										<input id="file_edit_1" name="file" label="文件" class="easyui-textbox" style="width:98%"/>
-									</td>
-									<td width="45%">
-										<input id="fileNewName_edit_1" name="fileNewName" class="easyui-textbox" label="重命名为" style="width:98%"/>
-									</td>
-									<td width="5%">
-										<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="alert('1')"></a>
-									</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					
-					<tr>
-						<td colspan="3">
-							<a href="#" class="easyui-linkbutton" onclick="uploadMultiFile()" style="width:98%">确定</a>
-						</td>
-					</tr>
-				</table>
-			</form>
-		</div>
-	</div>
 </body>
 </html>

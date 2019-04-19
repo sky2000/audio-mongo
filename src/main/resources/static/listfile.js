@@ -1,4 +1,4 @@
-var contextRootPath = '/imagecenter';
+var contextRootPath = '/audio';
 
 function newRecord(title){
 	//打开新的标签，在新的标签中进行添加操作
@@ -13,56 +13,22 @@ function newRecord(title){
 	var userCode = $('#userCode_hidden').val();
 	
 	if(userCode == null || userCode == ''){
-		var userId = $.cookie('userId');
-		if(userId != null && userId != ''){
-			userCode = userId;
-		}
+		userCode = $.cookie('userCode');
 	}
+	
+	// 先判断隐藏域中是否有userName，如果没有从cookie中取值
+	var userName = $('#userName_hidden').val();
+	
+	if(userName == null || userName == ''){
+		userName = $.cookie('userName');
+	}
+	
 	// 清空原有数据
 	$('#userCode_edit').textbox('setValue', userCode);  // 用户编码不需要清空
-	$('#category_edit').textbox('setValue', '');
+	$('#userName_edit').textbox('setValue', userName);
 	$('#file_edit').filebox('setValue', '');
 	
-	$('#fileNewName_edit').textbox('setValue', '');
-	var tags = $('#tags_edit').tagbox('clear');
 }
-
-
-function editRecord(title){
-	
-	var row = $('#dg').datagrid('getSelected');    //这一步可以改造为从后台异步获取数据
-	
-	if(row != null){
-		var id = row.id;
-		
-		var refuuid = row.uuid;
-		var md5 = row.md5;
-		var displayName = row.displayName;
-		var suffix = row.suffix;
-		var filename = displayName + "." + suffix;
-		var category = row.category;
-		var userCode = row.userCode;
-		
-		$('#dlg1').dialog('open').dialog('setTitle', title);
-		$('#fm1').form('clear');
-		
-		$('#userCode_edit_1').textbox('setValue', userCode);
-		$('#category_edit_1').textbox('setValue', category);
-		$('#file_edit_1').textbox('setValue', filename);
-//		$('#fileNewName_edit_1').textbox('getValue');
-//		$('#tags_edit_1').textbox('getValue');
-		
-		// 将uuid和md5写入隐藏域
-		$("#refuuid_edit_1").val(refuuid);
-		$("#md5_edit_1").val(md5);
-		
-	}else{
-		//alert("请选择一条记录进行修改");
-		//(提示框标题，提示信息)
-		$.messager.alert('提示','请选择一条记录进行修改');
-	}
-}
-
 
 function destroyRecord(){
 	var rows = $('#dg').datagrid('getSelections');
@@ -93,26 +59,7 @@ function destroyRecord(){
 
 function uploadFile(){
 	var userCode = $('#userCode_edit').textbox('getValue');
-	var category = $('#category_edit').textbox('getValue');
-	var fileName = $('#file_edit').filebox('getValue');
-	
-	var fileNewName = $('#fileNewName_edit').textbox('getValue');
-	console.log(fileName);
-	
-	var tags = $('#tags_edit').tagbox('getValues');
-	console.log(tags);
-	
-	var tagstr = '';
-	if(tags != null){
-		for(var i=0;i<tags.length;i++){
-			
-			if(i == 0){
-				tagstr = tagstr + tags[i];
-			}else{
-				tagstr = tagstr + "," + tags[i];
-			}
-		}
-	}
+	var userName = $('#userName_edit').textbox('getValue');
 
 	var fileList = $("input[type='file'].textbox-value")[0].files;
 
@@ -139,16 +86,25 @@ function uploadFile(){
 		$('#userCode_hidden').val(userCode);
 		
 		// 如果cookie中没有userCode，填写上
-		var userId = $.cookie('userId');
+		var userId = $.cookie('userCode');
 		if(userId == null || userId == ''){
-			$.cookie('userId', userCode, { expires: 7, path: '/' });
+			$.cookie('userCode', userCode, { expires: 7, path: '/' });
+		}
+	}
+	
+	if(userName != null && userName != ''){	
+		$('#userName_hidden').val(userName);
+		// 如果cookie中没有userCode，填写上
+		var uName = $.cookie('userName');
+		if(uName == null || uName == ''){
+			$.cookie('userName', userName, { expires: 7, path: '/' });
 		}
 	}
 	
 	
 	$.ajax({ 
 		type: "POST", //因为是传输文件，所以必须是post 
-		url: contextRootPath + '/ajaxupload?userCode=' + userCode + '&category=' + category + "&fileNewName=" + fileNewName + "&tags=" + tagstr, //对应的后台处理类的地址 
+		url: contextRootPath + '/ajaxupload?userCode=' + userCode + '&userName=' + userName, //对应的后台处理类的地址 
 		data: formData, 
 		processData: false, 
 		contentType: false, 
@@ -452,4 +408,90 @@ function uuid() {
  
     var uuid = s.join("");
     return uuid;
+}
+
+/**
+ * 将easyui的datagrid中的日期格式 转换为yyyy-MM-dd HH:mm:ss 的统一格式
+ * @param val
+ * @param row
+ * @returns
+ */
+function formatDateTime(val,row){
+	return '';
+	//return formatDateTimeString(val);
+}
+
+
+/**
+ * 转换日期格式为 yyyy-MM-dd HH:mm:ss 的统一格式
+ * @param timeStr
+ * @returns
+ */
+function formatDateTimeString(timeStr){
+	
+	if(timeStr == null || timeStr == ''){
+		return '';
+	}
+	
+	// 先判断下时间格式
+	// yyyy/MM/dd HH:mm
+	// yyyy/MM/dd HH:mm:ss
+	// yyyy-MM-dd HH:mm
+	// yyyy-MM-dd HH:mm:ss
+	
+	var reg = /(\d+)/g;
+	var r = timeStr.match(reg);
+	if(r != null && r.length > 0){
+		// r[0] 表示匹配到的全体
+		
+		var y = 1971;
+		var m = 1;
+		var d = 1;
+		var h = 0;
+		var mi = 0;
+		var s = 0;
+		
+		if(r.length > 0){
+			y = parseInt(r[0],10);
+		}
+		
+		if(r.length > 1){
+			m = parseInt(r[1],10);
+		}
+		
+		if(r.length > 2){
+			d = parseInt(r[2],10);
+		}
+		
+		if(r.length > 3){
+			h = parseInt(r[3],10);
+		}
+		
+		if(r.length > 4){
+			mi = parseInt(r[4],10);
+		}
+		
+		if(r.length > 5){
+			s = parseInt(r[5],10);
+		}
+		
+		var newStr = '' + y + '-' + (m<10?('0'+m):m) + '-' + (d<10?('0'+d):d) + ' ' + (h<10?('0'+h):h) + ':' + (mi<10?('0'+mi):mi) + ':' + (s<10?('0'+s):s);
+		return newStr;
+	}else{
+		return '';
+	}
+}
+
+/**
+ * 将easyui的datagrid中的代码翻译为汉字
+ * @param val
+ * @param row
+ * @returns
+ */
+function formatTrueOrFalse(val,row){
+	if(val == '1'){
+		return '是';
+	}else if(val == '0'){
+		return '否';
+	}
 }

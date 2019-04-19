@@ -11,6 +11,10 @@ public class AudioMain implements Serializable{
 	
 	private String name;
 	
+	private String suffix;
+	
+	private String fullName;
+	
 	private String userCode;
 	
 	private String userName;
@@ -75,6 +79,22 @@ public class AudioMain implements Serializable{
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
 }

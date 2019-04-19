@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.mongodb.MongoClient;
@@ -25,17 +26,22 @@ import com.yan.audio.mongo.util.SchemaUtil;
 @Service
 public class AudioServiceSpringImpl implements AudioService{
 
-	
+	@Value("${mongodb.user}")
 	private String user;
 	
+	@Value("${mongodb.dbUserDefined}")
 	private String dbUserDefined;
 	
+	@Value("${mongodb.password}")
 	private String password;
 	
+	@Value("${mongodb.ip}")
 	private String ip;
 	
+	@Value("${mongodb.port}")
 	private Integer port;
 	
+	@Value("${mongodb.database}")
 	private String db;
 	
 	public String insertAudio(AudioMain audioMain){
