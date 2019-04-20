@@ -340,4 +340,34 @@ public class AudioServiceSpringImpl implements AudioService{
 		
 		return bytesToWriteTo;
 	}
+
+	@Override
+	public void deleteFile(String id) {
+		// TODO Auto-generated method stub
+
+		//To connect to a single MongoDB instance:
+		//You can explicitly specify the hostname and the port:
+		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
+		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
+		                                         Arrays.asList(credential));
+		//Access a Database
+		MongoDatabase database = mongoClient.getDatabase(db);
+		
+		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+		
+		//Access a Collection
+		MongoCollection<Document> collection = database.getCollection("AudioMain");
+		Bson bson = Filters.eq("_id", new ObjectId(id));
+		Document doc = collection.find(bson).first();
+		
+		String fileId = (String) doc.getString("fileId");
+		
+		gridFSBucket.delete(new ObjectId(fileId));
+		
+		collection.deleteOne(bson);
+		
+		mongoClient.close();
+	}
+	
+	
 }
