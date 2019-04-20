@@ -28,11 +28,11 @@ public class AudioRestController {
 		DataGridVo dataGrid = new DataGridVo();
 		dataGrid.setSuccess(false);
 		
-		if(rows <= 0){
+		if(rows == null || rows <= 0){
 			rows = 10;
 		}
 		
-		if(page < 1){
+		if(page == null || page < 1){
 			page = 1;
 		}
 		
@@ -60,11 +60,11 @@ public class AudioRestController {
 		
 		responseVo.setSuccess(false);
 		
-		if(pageSize <= 0){
+		if(pageSize == null || pageSize <= 0){
 			pageSize = 10;
 		}
 		
-		if(pageNo < 1){
+		if(pageNo == null || pageNo < 1){
 			pageNo = 1;
 		}
 		
