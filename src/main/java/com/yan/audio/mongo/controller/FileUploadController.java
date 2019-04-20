@@ -35,9 +35,9 @@ public class FileUploadController {
 	}
 	
 	@RequestMapping("/audiopage")
-	public ModelAndView audiopage(String fileid) {
+	public ModelAndView audiopage(String fileId) {
 		ModelAndView mav = new ModelAndView("audiopage");
-		mav.addObject("fileid", fileid);
+		mav.addObject("fileId", fileId);
 		return mav;
 	}
 	
@@ -110,11 +110,11 @@ public class FileUploadController {
 
 	
 	@RequestMapping("/audioplay")
-	public @ResponseBody void audioplay(String fileid, HttpServletResponse response) throws Exception {
+	public @ResponseBody void audioplay(String fileId, HttpServletResponse response) throws Exception {
 
 		ServletOutputStream out = response.getOutputStream();
 		
-		byte[] bytesToWriteTo = audioService.readFile(fileid);
+		byte[] bytesToWriteTo = audioService.readFile(fileId);
 		
 		out.write(bytesToWriteTo);
 		out.flush();

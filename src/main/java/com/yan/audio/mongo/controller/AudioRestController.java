@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.yan.audio.mongo.schema.AudioMain;
 import com.yan.audio.mongo.service.facade.AudioService;
 import com.yan.audio.mongo.vo.DataGridVo;
+import com.yan.audio.mongo.vo.ResponseVo;
 
 @RestController
 public class AudioRestController {
@@ -21,7 +22,7 @@ public class AudioRestController {
 	
 	@RequestMapping("/audiodatagrid")
 	@ResponseBody
-	public DataGridVo audioDataGrid(Integer page, Integer rows, String validStatus) {
+	public DataGridVo audioDataGrid(String name, Integer page, Integer rows, String validStatus) {
 		DataGridVo dataGrid = new DataGridVo();
 		dataGrid.setSuccess(false);
 		
@@ -34,6 +35,7 @@ public class AudioRestController {
 		}
 		
 		Map<String, Object> condition = new HashMap<String, Object>();
+		condition.put("name", name);
 		condition.put("validStatus", validStatus);
 		condition.put("page", page);
 		condition.put("rows", rows);
@@ -47,5 +49,53 @@ public class AudioRestController {
 		dataGrid.setRows(audioMains);
 		
 		return dataGrid;
+	}
+	
+	@RequestMapping("/queryAudios")
+	@ResponseBody
+	public ResponseVo queryAudios(String name, Integer pageNo, Integer pageSize, String validStatus) {
+		ResponseVo responseVo = new ResponseVo();
+		
+		responseVo.setSuccess(false);
+		
+		if(pageSize <= 0){
+			pageSize = 10;
+		}
+		
+		if(pageNo < 1){
+			pageNo = 1;
+		}
+		
+		Map<String, Object> condition = new HashMap<String, Object>();
+		condition.put("name", name);
+		condition.put("validStatus", validStatus);
+		condition.put("page", pageNo);
+		condition.put("rows", pageSize);
+		
+		List<AudioMain> audioMains = audioService.findAudiosByCondition(condition);
+		// 总条数
+		Long total = audioService.countAudiosByCondition(condition);
+		
+		responseVo.setSuccess(true);
+		responseVo.setErrorMsg("");
+		
+		responseVo.setPageNo(pageNo);
+		responseVo.setPageSize(pageSize);
+		
+		responseVo.setTotalCount(total);
+		
+		// 总页数
+		Long totalPageCount = 1L;
+		
+		if(total % pageSize == 0) {
+			totalPageCount = total / pageSize;
+		}else {
+			totalPageCount = total / pageSize + 1;
+		}
+		responseVo.setTotalPageCount(totalPageCount);
+		
+		responseVo.setResults(audioMains);;
+		
+		return responseVo;
 	}
 }

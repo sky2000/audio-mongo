@@ -265,10 +265,15 @@ function formatTrueOrFalse(val,row){
 	}
 }
 
-
+/**
+ * 将操作列转换为播放音频
+ * @param val
+ * @param row
+ * @returns
+ */
 function formatOperation(val,row){
-	var fileid = row.fileId;
-	if(fileid != null && fileid !== ''){
-		return '<audio id="mp3_' + fileid + '" src="/audio/audioplay?fileid=' + fileid + '" controls="true"></audio>';
+	var fileId = row.fileId;
+	if(fileId != null && fileId !== ''){
+		return '<audio id="mp3_' + fileId + '" src="/audio/audioplay?fileId=' + fileId + '" controls="true"></audio>';
 	}
 }
