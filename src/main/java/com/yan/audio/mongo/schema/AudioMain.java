@@ -9,6 +9,8 @@ public class AudioMain implements Serializable{
 
 	private String id;
 	
+	private String fileId;
+	
 	private String name;
 	
 	private String suffix;
@@ -95,6 +97,14 @@ public class AudioMain implements Serializable{
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	public String getFileId() {
+		return fileId;
+	}
+
+	public void setFileId(String fileId) {
+		this.fileId = fileId;
 	}
 
 }

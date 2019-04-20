@@ -1,5 +1,7 @@
 package com.yan.audio.mongo.service.facade;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -13,4 +15,9 @@ public interface AudioService {
 
 	String insertAudio(AudioMain audioMain);
 	
+	String insertFile(String fileName, InputStream streamToUploadFrom);
+	
+	void readFile(String fileId, OutputStream outputStream);
+	
+	byte[] readFile(String fileId);
 }

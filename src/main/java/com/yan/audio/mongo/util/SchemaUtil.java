@@ -16,6 +16,7 @@ public class SchemaUtil {
 				doc.append("_id", new ObjectId(audioMain.getId()));
 			}
 			doc.append("name", audioMain.getName());
+			doc.append("fileId", audioMain.getFileId());
 			doc.append("suffix", audioMain.getSuffix());
 			doc.append("fullName", audioMain.getFullName());
 			
@@ -38,6 +39,7 @@ public class SchemaUtil {
 				audioMain.setId(objectId.toString());
 			}
 			audioMain.setName(doc.getString("name"));
+			audioMain.setFileId(doc.getString("fileId"));
 			audioMain.setSuffix(doc.getString("suffix"));
 			audioMain.setFullName(doc.getString("fullName"));
 			

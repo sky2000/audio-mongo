@@ -1,6 +1,10 @@
 package com.yan.audio.mongo.controller;
 
+import java.io.IOException;
 import java.util.Date;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.yan.audio.mongo.schema.AudioMain;
 import com.yan.audio.mongo.service.facade.AudioService;
@@ -28,12 +33,22 @@ public class FileUploadController {
 	public String filelist() {
 		return "filelist";
 	}
-
+	
+	@RequestMapping("/audiopage")
+	public ModelAndView audiopage(String fileid) {
+		ModelAndView mav = new ModelAndView("audiopage");
+		mav.addObject("fileid", fileid);
+		return mav;
+	}
+	
 	@RequestMapping("/ajaxupload")
 	@ResponseBody
 	public ResponseVo ajaxupload(@RequestParam("file") MultipartFile file, String userCode, String userName) {
-		com.yan.audio.mongo.vo.ResponseVo response = new ResponseVo();
+		ResponseVo response = new ResponseVo();
 		response.setSuccess(false);
+		
+		// uuid
+		//String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 		
 		String fileName = file.getOriginalFilename();
 		if (fileName.indexOf("\\") != -1) {
@@ -45,7 +60,7 @@ public class FileUploadController {
 		// 不带后缀名得文件名称
 		String fileNameWithoutSuffix = null;
 		if(fileName.lastIndexOf(".") > 0) {
-			fileName.substring(fileName.lastIndexOf(".") + 1);
+			suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
 			// 后缀名都转为小写存储
 			suffix = suffix.toLowerCase();
 			
@@ -67,15 +82,42 @@ public class FileUploadController {
 		audioMain.setInsertTime(new Date());
 		audioMain.setUpdateTime(new Date());
 
-		// 将文件数据写入数据库
-		String id = audioService.insertAudio(audioMain);
-		audioMain.setId(id);
 		
-		response.setSuccess(true);
-		response.setErrorMsg("");
+		try {
+			String fileId = audioService.insertFile(fileNameWithoutSuffix, file.getInputStream());
+			audioMain.setFileId(fileId);
+			
+			// 将文件数据写入数据库
+			String id = audioService.insertAudio(audioMain);
+			audioMain.setId(id);
+			
+			response.setSuccess(true);
+			response.setErrorMsg("上传成功");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			response.setSuccess(false);
+			response.setErrorMsg(e.getMessage());
+			
+		}
+		
 		response.setResult(audioMain);
 		
 		return response;
 	}
 
+	
+	@RequestMapping("/audioplay")
+	public @ResponseBody void audioplay(String fileid, HttpServletResponse response) throws Exception {
+
+		ServletOutputStream out = response.getOutputStream();
+		
+		byte[] bytesToWriteTo = audioService.readFile(fileid);
+		
+		out.write(bytesToWriteTo);
+		out.flush();
+		out.close();
+	}
 }

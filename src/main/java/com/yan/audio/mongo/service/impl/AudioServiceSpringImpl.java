@@ -1,5 +1,8 @@
 package com.yan.audio.mongo.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -18,6 +21,10 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSBuckets;
+import com.mongodb.client.gridfs.GridFSDownloadStream;
+import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.model.Filters;
 import com.yan.audio.mongo.schema.AudioMain;
 import com.yan.audio.mongo.service.facade.AudioService;
@@ -223,5 +230,114 @@ public class AudioServiceSpringImpl implements AudioService{
 		
 		return count;
 	}
+
+	public String insertFile(String fileName, InputStream streamToUploadFrom) {
+		String id = null;
+		
+		//To connect to a single MongoDB instance:
+		//You can explicitly specify the hostname and the port:
+		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
+		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
+		                                         Arrays.asList(credential));
+		//Access a Database
+		MongoDatabase database = mongoClient.getDatabase(db);
+		
+		// Create a gridFSBucket using the default bucket name "fs"
+		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+		//GridFSBucket gridFSFilesBucket = GridFSBuckets.create(database, "files");
+		
+		// Get the input stream
+
+		try {
+		    //InputStream streamToUploadFrom = new FileInputStream(new File("/tmp/mongodb-tutorial.pdf"));
+		    // Create some custom options
+		    GridFSUploadOptions options = new GridFSUploadOptions()
+		                                        .chunkSizeBytes(358400)
+		                                        .metadata(new Document("type", "presentation"));
+
+		    ObjectId fileId = gridFSBucket.uploadFromStream(fileName, streamToUploadFrom, options);
+		    id = fileId.toString();
+		} catch (Exception e){
+		   // handle exception
+		}finally {
+			if(streamToUploadFrom != null) {
+				try {
+					streamToUploadFrom.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if(mongoClient != null) {
+				mongoClient.close();
+			}
+		}
+		return id;
+	}
 	
+	public void readFile(String fileId, OutputStream outputStream) {
+		
+		if(fileId == null || "".equals(fileId)) {
+			return ;
+		}
+		
+		//To connect to a single MongoDB instance:
+		//You can explicitly specify the hostname and the port:
+		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
+		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
+		                                         Arrays.asList(credential));
+		//Access a Database
+		MongoDatabase database = mongoClient.getDatabase(db);
+		
+		// Create a gridFSBucket using the default bucket name "fs"
+		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+		//GridFSBucket gridFSFilesBucket = GridFSBuckets.create(database, "files");
+		
+		
+		ObjectId fId = new ObjectId(fileId.toString()); //The id of a file uploaded to GridFS, initialize to valid file id
+		try {
+			//FileOutputStream streamToDownloadTo = new FileOutputStream("/tmp/mongodb-tutorial.pdf");
+			gridFSBucket.downloadToStream(fId, outputStream);
+			//streamToDownloadTo.close();
+		} catch (Exception e) {
+			// handle exception
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public byte[] readFile(String fileId) {
+		byte[] bytesToWriteTo = new byte[0];
+		
+		if(fileId == null || "".equals(fileId)) {
+			return bytesToWriteTo;
+		}
+		
+		//To connect to a single MongoDB instance:
+		//You can explicitly specify the hostname and the port:
+		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
+		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
+		                                         Arrays.asList(credential));
+		//Access a Database
+		MongoDatabase database = mongoClient.getDatabase(db);
+		
+		// Create a gridFSBucket using the default bucket name "fs"
+		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+		//GridFSBucket gridFSFilesBucket = GridFSBuckets.create(database, "files");
+		
+		ObjectId fId = new ObjectId(fileId.toString()); //The id of a file uploaded to GridFS, initialize to valid file id
+		try {
+			
+			GridFSDownloadStream downloadStream = gridFSBucket.openDownloadStream(fId);
+			int fileLength = (int) downloadStream.getGridFSFile().getLength();
+			bytesToWriteTo = new byte[fileLength];
+			downloadStream.read(bytesToWriteTo);
+			downloadStream.close();
+		} catch (Exception e) {
+			// handle exception
+			e.printStackTrace();
+		}
+		mongoClient.close();
+		
+		return bytesToWriteTo;
+	}
 }
