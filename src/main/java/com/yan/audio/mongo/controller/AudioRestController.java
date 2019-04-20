@@ -25,21 +25,18 @@ public class AudioRestController {
 		DataGridVo dataGrid = new DataGridVo();
 		dataGrid.setSuccess(false);
 		
-		int offset = 0;
-		int pageSize = 10;
-		
-		if(rows > 0){
-			pageSize = rows;
+		if(rows <= 0){
+			rows = 10;
 		}
 		
-		if(page > 0){
-			offset = (page - 1) * pageSize;
+		if(page < 1){
+			page = 1;
 		}
 		
 		Map<String, Object> condition = new HashMap<String, Object>();
 		condition.put("validStatus", validStatus);
-		condition.put("offset", offset);
-		condition.put("pageSize", pageSize);
+		condition.put("page", page);
+		condition.put("rows", rows);
 		
 		List<AudioMain> audioMains = audioService.findAudiosByCondition(condition);
 		Long total = audioService.countAudiosByCondition(condition);
