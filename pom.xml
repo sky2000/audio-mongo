@@ -109,7 +109,7 @@
 					<archive>
 						<manifest>
 							<!--程序入口-->
-							<mainClass>com.yan.image.center.UploadApplication</mainClass>
+							<mainClass>com.yan.audio.mongo.AudioApplication</mainClass>
 							<!-- <addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix> -->
 						</manifest>
