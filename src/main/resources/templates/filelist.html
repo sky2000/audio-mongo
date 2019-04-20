@@ -27,9 +27,11 @@
 			<!-- field必须不能重复，否则页面展示上比例调整起来很没有规律 -->
 			<th data-options="field:'id',hidden:true">id</th>
 			<th data-options="field:'userCode',hidden:true">userCode</th>
-			<th field="name" width="40">名称</th>
-			<th field="userName" width="30">上传者</th>
-			<th field="insertTime" width="30">上传时间</th>
+			<th data-options="field:'fileId',hidden:true">fileId</th>
+			<th field="name" width="30">名称</th>
+			<th field="userName" width="20">上传者</th>
+			<th field="insertTime" width="20">上传时间</th>
+			<th field="operation" width="30" formatter="formatOperation">操作</th>
 		</tr>
 	</thead>
 </table>

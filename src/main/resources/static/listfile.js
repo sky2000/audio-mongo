@@ -264,3 +264,11 @@ function formatTrueOrFalse(val,row){
 		return '否';
 	}
 }
+
+
+function formatOperation(val,row){
+	var fileid = row.fileId;
+	if(fileid != null && fileid !== ''){
+		return '<audio id="mp3_' + fileid + '" src="/audio/audioplay?fileid=' + fileid + '" controls="true"></audio>';
+	}
+}
