@@ -4,18 +4,18 @@
 
 AudioMain
 
-```Schema
+```json
 {
-	id : '',
-	fileId : '',
-	name : '测试',
-	suffix : 'mp3',
-	fullName : '测试.mp3',
-	userCode : 'zhangsan',
-	userName : '张三',
-	validStatus : '1',
-	insertTime : ,
-	updateTime : ''
+	"id" : "",
+	"fileId" : "",
+	"name" : "测试",
+	"suffix" : "mp3",
+	"fullName" : "测试.mp3",
+	"userCode" : "zhangsan",
+	"userName" : "张三",
+	"validStatus" : "1",
+	"insertTime" : "",
+	"updateTime" : ""
 }
 ```
 
@@ -56,19 +56,19 @@ AudioMain
 
 ```json
 {
-	success : true,
-	errorMsg : '',
-	result : {
-				id : '',
-				fileId : '',
-				name : '测试',
-				suffix : 'mp3',
-				fullName : '测试.mp3',
-				userCode : 'zhangsan',
-				userName : '张三',
-				validStatus : '1',
-				insertTime : '',
-				updateTime : ''
+	"success" : true,
+	"errorMsg" : "",
+	"result" : {
+				"id" : "",
+				"fileId" : "",
+				"name" : "测试",
+				"suffix" : "mp3",
+				"fullName" : "测试.mp3",
+				"userCode" : "zhangsan",
+				"userName" : "张三",
+				"validStatus" : "1",
+				"insertTime" : "",
+				"updateTime" : ""
 			}
 }
 ```
@@ -114,8 +114,8 @@ $.ajax({
 
 ```json
 {
-	success : true,
-	errorMsg : ''
+	"success" : true,
+	"errorMsg" : ""
 }
 ```
 
@@ -140,36 +140,36 @@ $.ajax({
 
 ```
 {
-	success : true,
-	errorMsg : '',
-	pageNo : 1,
-	pageSize : 10,
-	totalCount : 230,
-	totalPageCount : 23,
-	results : [
+	"success" : true,
+	"errorMsg" : "",
+	"pageNo" : 1,
+	"pageSize" : 10,
+	"totalCount" : 230,
+	"totalPageCount" : 23,
+	"results" : [
 				{
-					id : '',
-					fileId : '',
-					name : '测试',
-					suffix : 'mp3',
-					fullName : '测试.mp3',
-					userCode : 'zhangsan',
-					userName : '张三',
-					validStatus : '1',
-					insertTime : ,
-					updateTime : ''
+					"id" : "",
+					"fileId" : "",
+					"name" : "测试",
+					"suffix" : "mp3",
+					"fullName" : "测试.mp3",
+					"userCode" : "zhangsan",
+					"userName" : "张三",
+					"validStatus" : "1",
+					"insertTime" : "",
+					"updateTime" : ""
 				},
 				{
-					id : '',
-					fileId : '',
-					name : '测试2',
-					suffix : 'mp3',
-					fullName : '测试2.mp3',
-					userCode : 'lisi',
-					userName : '李四',
-					validStatus : '1',
-					insertTime : ,
-					updateTime : ''
+					"id" : "",
+					"fileId" : "",
+					"name" : "测试2",
+					"suffix" : "mp3",
+					"fullName" : "测试2.mp3",
+					"userCode" : "lisi",
+					"userName" : "李四",
+					"validStatus" : "1",
+					"insertTime" : "",
+					"updateTime" : ""
 				}
 	]
 }
