@@ -20,4 +20,6 @@ public interface AudioService {
 	void readFile(String fileId, OutputStream outputStream);
 	
 	byte[] readFile(String fileId);
+	
+	void deleteFile(String fileId);
 }

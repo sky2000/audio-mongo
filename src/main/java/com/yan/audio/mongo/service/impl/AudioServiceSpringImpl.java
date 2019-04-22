@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
@@ -24,6 +25,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.GridFSDownloadStream;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.model.Filters;
 import com.yan.audio.mongo.schema.AudioMain;
@@ -303,15 +305,61 @@ public class AudioServiceSpringImpl implements AudioService{
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	public byte[] readFile(String fileId) {
-		byte[] bytesToWriteTo = new byte[0];
 		
 		if(fileId == null || "".equals(fileId)) {
-			return bytesToWriteTo;
+			return new byte[0];
 		}
 		
+		MongoClientOptions.Builder optionsBuilder = new MongoClientOptions.Builder();
+		optionsBuilder.maxConnectionIdleTime(6000);
+		MongoClientOptions options = optionsBuilder.build();
+
+		// To connect to a single MongoDB instance:
+		// You can explicitly specify the hostname and the port:
+		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
+		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port), Arrays.asList(credential), options);
+		// Access a Database
+		MongoDatabase database = mongoClient.getDatabase(db);
+		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+
+		GridFSDownloadStream stream = null;
+		byte[] returnBts = null;
+		try {
+			stream = gridFSBucket.openDownloadStream(new ObjectId(fileId));
+			GridFSFile file = stream.getGridFSFile();
+			int size = file.getChunkSize();
+			int len = (int) file.getLength();
+			int readSize = Math.min(len, size);
+			returnBts = new byte[len];
+			/** offset num */
+			int offset = 0;
+			while (len > 0) {
+				int tmp;
+				if (len > readSize) {
+					tmp = stream.read(returnBts, offset, readSize);
+					offset += tmp;
+				} else {
+					tmp = stream.read(returnBts, offset, len);
+				}
+				len -= tmp;
+			}
+
+		} finally {
+			if (stream != null)
+				stream.close();
+		}
+		if (mongoClient != null) {
+			mongoClient.close();
+		}
+		return returnBts;
+	}
+
+	@Override
+	public void deleteFile(String id) {
+		// TODO Auto-generated method stub
+
 		//To connect to a single MongoDB instance:
 		//You can explicitly specify the hostname and the port:
 		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
@@ -320,24 +368,21 @@ public class AudioServiceSpringImpl implements AudioService{
 		//Access a Database
 		MongoDatabase database = mongoClient.getDatabase(db);
 		
-		// Create a gridFSBucket using the default bucket name "fs"
 		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
-		//GridFSBucket gridFSFilesBucket = GridFSBuckets.create(database, "files");
 		
-		ObjectId fId = new ObjectId(fileId.toString()); //The id of a file uploaded to GridFS, initialize to valid file id
-		try {
-			
-			GridFSDownloadStream downloadStream = gridFSBucket.openDownloadStream(fId);
-			int fileLength = (int) downloadStream.getGridFSFile().getLength();
-			bytesToWriteTo = new byte[fileLength];
-			downloadStream.read(bytesToWriteTo);
-			downloadStream.close();
-		} catch (Exception e) {
-			// handle exception
-			e.printStackTrace();
-		}
+		//Access a Collection
+		MongoCollection<Document> collection = database.getCollection("AudioMain");
+		Bson bson = Filters.eq("_id", new ObjectId(id));
+		Document doc = collection.find(bson).first();
+		
+		String fileId = (String) doc.getString("fileId");
+		
+		gridFSBucket.delete(new ObjectId(fileId));
+		
+		collection.deleteOne(bson);
+		
 		mongoClient.close();
-		
-		return bytesToWriteTo;
 	}
+	
+	
 }

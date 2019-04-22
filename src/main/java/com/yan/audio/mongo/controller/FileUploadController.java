@@ -44,7 +44,7 @@ public class FileUploadController {
 	
 	@RequestMapping("/ajaxupload")
 	@ResponseBody
-	public ResponseVo ajaxupload(@RequestParam("file") MultipartFile file, String userCode, String userName) {
+	public ResponseVo ajaxupload(@RequestParam("file") MultipartFile file, HttpServletResponse res,String userCode, String userName) {
 		ResponseVo response = new ResponseVo();
 		response.setSuccess(false);
 		
@@ -105,7 +105,8 @@ public class FileUploadController {
 		}
 		
 		response.setResult(audioMain);
-		
+		res.setHeader("Access-Control-Allow-Origin","*");
+		res.setHeader("Cache-Control","no-cache");
 		return response;
 	}
 
@@ -116,7 +117,6 @@ public class FileUploadController {
 		ServletOutputStream out = response.getOutputStream();
 		
 		byte[] bytesToWriteTo = audioService.readFile(fileId);
-		
 //		int length = bytesToWriteTo.length;
 //		
 //		int step = 1024;

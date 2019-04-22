@@ -4,15 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.yan.audio.mongo.schema.AudioMain;
 import com.yan.audio.mongo.service.facade.AudioService;
 import com.yan.audio.mongo.vo.DataGridVo;
 import com.yan.audio.mongo.vo.ResponseVo;
+
 
 @RestController
 public class AudioRestController {
@@ -53,7 +55,7 @@ public class AudioRestController {
 	
 	@RequestMapping("/queryAudios")
 	@ResponseBody
-	public ResponseVo queryAudios(String name, Integer pageNo, Integer pageSize, String validStatus) {
+	public ResponseVo queryAudios(HttpServletResponse res,String name, Integer pageNo, Integer pageSize, String validStatus) {
 		ResponseVo responseVo = new ResponseVo();
 		
 		responseVo.setSuccess(false);
@@ -94,7 +96,23 @@ public class AudioRestController {
 		}
 		responseVo.setTotalPageCount(totalPageCount);
 		
-		responseVo.setResults(audioMains);;
+		responseVo.setResults(audioMains);
+		res.setHeader("Access-Control-Allow-Origin","*");
+		res.setHeader("Cache-Control","no-cache");
+		
+		return responseVo;
+	}
+	
+	@RequestMapping("/deleteAudio")
+	@ResponseBody
+	public ResponseVo deleteAudio(String id) {
+		ResponseVo responseVo = new ResponseVo();
+		
+		responseVo.setSuccess(false);
+		
+		audioService.deleteFile(id);
+		
+		responseVo.setSuccess(true);
 		
 		return responseVo;
 	}
