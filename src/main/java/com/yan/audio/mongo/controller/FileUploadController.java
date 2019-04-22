@@ -1,6 +1,7 @@
 package com.yan.audio.mongo.controller;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.servlet.ServletOutputStream;
@@ -115,6 +116,25 @@ public class FileUploadController {
 		ServletOutputStream out = response.getOutputStream();
 		
 		byte[] bytesToWriteTo = audioService.readFile(fileId);
+		
+//		int length = bytesToWriteTo.length;
+//		
+//		int step = 1024;
+//		int from = 0;
+//		int to = 0;
+//		while(from < length) {
+//			if((length - from) >= step) {
+//				to = from + step;
+//			}else {
+//				to = length - 1;
+//			}
+//			byte[] tmp = Arrays.copyOfRange(bytesToWriteTo, from, to);
+//			
+//			out.write(tmp);
+//			out.flush();
+//			
+//			from += step;
+//		}
 		
 		out.write(bytesToWriteTo);
 		out.flush();
