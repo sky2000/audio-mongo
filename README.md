@@ -194,3 +194,41 @@ $.ajax({
 ```Html5
 <audio id="mp3" src="/audio/audioplay?fileId=5cba8928aecddb05b8994612" controls="true"></audio>
 ```
+
+## 安装
+
+### 环境要求
+
+- MongoDB
+- Maven
+
+### 修改配置文件
+
+拷贝`application-example.properties`命名为`application-test.properties`
+
+修改`application-test.properties`中mongodb的连接及数据库配置部分
+
+|配置字段|说明|
+|---|---|
+|mongodb.ip|MongoDB的ip，本地环境默人为localhost|
+|mongodb.port|MongoDB端口，默人为27017|
+|mongodb.database|应用需要连接的database|
+|mongodb.dbUserDefined|定义用户的database|
+|mongodb.user|用户名|
+|mongodb.password|密码|
+
+### 打包
+
+```maven
+
+mvn clean
+
+mvn package
+```
+
+## 发布说明
+
+### v1.0.0
+
+- 使用MongoDB存储音频文件
+- 音频文件的上传、删除、查询功能
