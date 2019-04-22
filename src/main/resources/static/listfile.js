@@ -41,8 +41,8 @@ function destroyRecord(){
 	if (row){
 		$.messager.confirm('Confirm','确定删除这条记录吗？',function(r){
 			if (r){
-				var refuuid = row.uuid;
-				$.post(contextRootPath + '/deletefile?refuuid=' + refuuid, {},function(result){
+				var id = row.id;
+				$.post(contextRootPath + '/deleteAudio?id=' + id, {},function(result){
 					if (result.success){
 						$('#dg').datagrid('reload');	// reload the user data
 					} else {
@@ -126,70 +126,6 @@ function uploadFile(){
 		}
 	}); 
 }
-
-/**
- * 删除某一行数据
- * @param rowId
- * @returns
- */
-function removeRow(rowId){
-	//console.log("remove row, rowId:" + rowId);
-	
-	$("#" + rowId).detach();
-	
-//	detach() 方法移除被选元素，包括所有文本和子节点。
-//	这个方法会保留 jQuery 对象中的匹配的元素，因而可以在将来再使用这些匹配的元素。
-//	detach() 会保留所有绑定的事件、附加的数据，这一点与 remove() 不同。
-	
-//	remove() 方法移除被选元素，包括所有文本和子节点。
-//	该方法不会把匹配的元素从 jQuery 对象中删除，因而可以在将来再使用这些匹配的元素。
-//	但除了这个元素本身得以保留之外，remove() 不会保留元素的 jQuery 数据。其他的比如绑定的事件、附加的数据等都会被移除。这一点与 detach() 不同。
-	
-}
-
-/**
- * 生成长度为length的随机Id
- */
-function randomId(length){
-	var s = [];
-    var hexDigits = "0123456789abcdef";
-    for (var i = 0; i < length; i++) {
-        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-    }
-    
-    var randomId = s.join("");
-    return randomId;
-}
-
-/**
- * 生成uuid
- * @returns
- */
-function uuid() {
-    var s = [];
-    var hexDigits = "0123456789abcdef";
-    for (var i = 0; i < 36; i++) {
-        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-    }
-    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-    s[8] = s[13] = s[18] = s[23] = "-";
- 
-    var uuid = s.join("");
-    return uuid;
-}
-
-/**
- * 将easyui的datagrid中的日期格式 转换为yyyy-MM-dd HH:mm:ss 的统一格式
- * @param val
- * @param row
- * @returns
- */
-function formatDateTime(val,row){
-	return '';
-	//return formatDateTimeString(val);
-}
-
 
 /**
  * 转换日期格式为 yyyy-MM-dd HH:mm:ss 的统一格式
