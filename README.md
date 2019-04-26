@@ -232,3 +232,14 @@ mvn package
 
 - 使用MongoDB存储音频文件
 - 音频文件的上传、删除、查询功能
+
+## 协同开发
+
+使用github flow工作流
+
+- clone到本地
+- 在本地创建自己的一个分支
+- switch到本地自己的分支上
+- 修改代码
+- commit代码
+- pull request
