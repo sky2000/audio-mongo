@@ -232,3 +232,8 @@ mvn package
 
 - 使用MongoDB存储音频文件
 - 音频文件的上传、删除、查询功能
+
+### v1.1.0
+
+- 使用连接池
+- 使用MongoTemplate获取Collection来进行查询

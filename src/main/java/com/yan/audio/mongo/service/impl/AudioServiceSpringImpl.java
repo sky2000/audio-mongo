@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +12,10 @@ import java.util.Map.Entry;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.gridfs.GridFSBucket;
@@ -35,36 +31,13 @@ import com.yan.audio.mongo.util.SchemaUtil;
 @Service
 public class AudioServiceSpringImpl implements AudioService{
 
-	@Value("${mongodb.user}")
-	private String user;
-	
-	@Value("${mongodb.dbUserDefined}")
-	private String dbUserDefined;
-	
-	@Value("${mongodb.password}")
-	private String password;
-	
-	@Value("${mongodb.ip}")
-	private String ip;
-	
-	@Value("${mongodb.port}")
-	private Integer port;
-	
-	@Value("${mongodb.database}")
-	private String db;
+	@Autowired
+	MongoTemplate mongoTemplate;
 	
 	public String insertAudio(AudioMain audioMain){
-
-		//To connect to a single MongoDB instance:
-		//You can explicitly specify the hostname and the port:
-		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
-		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
-		                                         Arrays.asList(credential));
-		//Access a Database
-		MongoDatabase database = mongoClient.getDatabase(db);
 		
 		//Access a Collection
-		MongoCollection<Document> collection = database.getCollection("AudioMain");
+		MongoCollection<Document> collection = mongoTemplate.getCollection("AudioMain");
 		
 		//Create a Document
 		Document doc = SchemaUtil.audioToDocument(audioMain);
@@ -76,7 +49,6 @@ public class AudioServiceSpringImpl implements AudioService{
 		if(doc.get("_id") != null){
 			id = doc.get("_id").toString();
 		}
-		mongoClient.close();
 		return id;
 	}
 	
@@ -85,17 +57,9 @@ public class AudioServiceSpringImpl implements AudioService{
 		
 		if(condition != null && condition.size() > 0) {
 			
-			//To connect to a single MongoDB instance:
-			//You can explicitly specify the hostname and the port:
-			MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
-			MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
-			                                         Arrays.asList(credential));
-			//Access a Database
-			MongoDatabase database = mongoClient.getDatabase(db);
-			
 			//Access a Collection
-			MongoCollection<Document> collection = database.getCollection("AudioMain");
-			
+			MongoCollection<Document> collection = mongoTemplate.getCollection("AudioMain");
+
 			List<Bson> bsons = new ArrayList<Bson>(0);
 			
 			//分页的页码
@@ -163,7 +127,6 @@ public class AudioServiceSpringImpl implements AudioService{
 					audioMains.add(audioMain);
 				}
 			}
-			mongoClient.close();
 		}
 		return audioMains;
 	}
@@ -173,16 +136,8 @@ public class AudioServiceSpringImpl implements AudioService{
 		
 		if(condition != null && condition.size() > 0) {
 			
-			//To connect to a single MongoDB instance:
-			//You can explicitly specify the hostname and the port:
-			MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
-			MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
-			                                         Arrays.asList(credential));
-			//Access a Database
-			MongoDatabase database = mongoClient.getDatabase(db);
-			
 			//Access a Collection
-			MongoCollection<Document> collection = database.getCollection("AudioMain");
+			MongoCollection<Document> collection = mongoTemplate.getCollection("AudioMain");
 			
 			List<Bson> bsons = new ArrayList<Bson>(0);
 			
@@ -223,11 +178,10 @@ public class AudioServiceSpringImpl implements AudioService{
 			
 			//如果要在find中传入bson数组，那么bson数组必须不能为空
 			if(bsons != null && bsons.size() > 0){
-				count = collection.count(Filters.and(bsons));
+				count = collection.countDocuments(Filters.and(bsons));
 			}else{
-				count = collection.count();
+				count = collection.countDocuments();
 			}
-			mongoClient.close();
 		}
 		
 		return count;
@@ -236,13 +190,7 @@ public class AudioServiceSpringImpl implements AudioService{
 	public String insertFile(String fileName, InputStream streamToUploadFrom) {
 		String id = null;
 		
-		//To connect to a single MongoDB instance:
-		//You can explicitly specify the hostname and the port:
-		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
-		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
-		                                         Arrays.asList(credential));
-		//Access a Database
-		MongoDatabase database = mongoClient.getDatabase(db);
+		MongoDatabase database = mongoTemplate.getDb();
 		
 		// Create a gridFSBucket using the default bucket name "fs"
 		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
@@ -269,9 +217,6 @@ public class AudioServiceSpringImpl implements AudioService{
 					e.printStackTrace();
 				}
 			}
-			if(mongoClient != null) {
-				mongoClient.close();
-			}
 		}
 		return id;
 	}
@@ -282,13 +227,7 @@ public class AudioServiceSpringImpl implements AudioService{
 			return ;
 		}
 		
-		//To connect to a single MongoDB instance:
-		//You can explicitly specify the hostname and the port:
-		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
-		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
-		                                         Arrays.asList(credential));
-		//Access a Database
-		MongoDatabase database = mongoClient.getDatabase(db);
+		MongoDatabase database = mongoTemplate.getDb();
 		
 		// Create a gridFSBucket using the default bucket name "fs"
 		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
@@ -312,16 +251,7 @@ public class AudioServiceSpringImpl implements AudioService{
 			return new byte[0];
 		}
 		
-		MongoClientOptions.Builder optionsBuilder = new MongoClientOptions.Builder();
-		optionsBuilder.maxConnectionIdleTime(6000);
-		MongoClientOptions options = optionsBuilder.build();
-
-		// To connect to a single MongoDB instance:
-		// You can explicitly specify the hostname and the port:
-		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
-		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port), Arrays.asList(credential), options);
-		// Access a Database
-		MongoDatabase database = mongoClient.getDatabase(db);
+		MongoDatabase database = mongoTemplate.getDb();
 		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
 
 		GridFSDownloadStream stream = null;
@@ -350,28 +280,17 @@ public class AudioServiceSpringImpl implements AudioService{
 			if (stream != null)
 				stream.close();
 		}
-		if (mongoClient != null) {
-			mongoClient.close();
-		}
 		return returnBts;
 	}
 
 	@Override
 	public void deleteFile(String id) {
-		// TODO Auto-generated method stub
-
-		//To connect to a single MongoDB instance:
-		//You can explicitly specify the hostname and the port:
-		MongoCredential credential = MongoCredential.createCredential(user, dbUserDefined, password.toCharArray());
-		MongoClient mongoClient = new MongoClient(new ServerAddress(ip, port),
-		                                         Arrays.asList(credential));
-		//Access a Database
-		MongoDatabase database = mongoClient.getDatabase(db);
+		MongoDatabase database = mongoTemplate.getDb();
 		
 		GridFSBucket gridFSBucket = GridFSBuckets.create(database);
 		
 		//Access a Collection
-		MongoCollection<Document> collection = database.getCollection("AudioMain");
+		MongoCollection<Document> collection = mongoTemplate.getCollection("AudioMain");
 		Bson bson = Filters.eq("_id", new ObjectId(id));
 		Document doc = collection.find(bson).first();
 		
@@ -380,8 +299,6 @@ public class AudioServiceSpringImpl implements AudioService{
 		gridFSBucket.delete(new ObjectId(fileId));
 		
 		collection.deleteOne(bson);
-		
-		mongoClient.close();
 	}
 	
 	

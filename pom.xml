@@ -4,7 +4,7 @@
 
   <groupId>com.yan</groupId>
   <artifactId>audio-mongo</artifactId>
-  <version>1.0.0-RELEASE</version>
+  <version>1.1.0-RELEASE</version>
   <packaging>jar</packaging>
 
   <name>image-center</name>
@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.9.RELEASE</version> 
+		<version>2.1.4.RELEASE</version> 
 	</parent>
 
   <dependencies>
@@ -41,7 +41,6 @@
 	<dependency>
     	<groupId>net.sourceforge.nekohtml</groupId>
     	<artifactId>nekohtml</artifactId>
-    	<version>1.9.22</version>
 	</dependency>
 	
 	<dependency>
@@ -61,17 +60,6 @@
 	    <artifactId>spring-boot-starter-logging</artifactId>
 	</dependency>
 
-	<dependency>
-	    <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver</artifactId>
-        <version>3.5.0</version>
-    </dependency>
-	<dependency>
-	    <groupId>org.mongodb</groupId>
-	    <artifactId>mongo-java-driver</artifactId>
-	    <version>3.5.0</version>
-	</dependency>
-	
   </dependencies>
 
   	<!-- spring boot的maven插件：可执行jar/war包支持 -->
@@ -100,7 +88,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.6</version>
 				<configuration>
 					<archive>
 						<manifest>
