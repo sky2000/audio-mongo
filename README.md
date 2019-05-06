@@ -237,3 +237,14 @@ mvn package
 
 - 使用连接池
 - 使用MongoTemplate获取Collection来进行查询
+
+## 协同开发
+
+使用github flow工作流
+
+- clone到本地
+- 在本地创建自己的一个分支
+- switch到本地自己的分支上
+- 修改代码
+- commit代码
+- pull request
